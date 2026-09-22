@@ -31,20 +31,41 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
 #timer-bar{height:12px;background:#1e293b;border-radius:999px;overflow:hidden;position:relative;flex-shrink:0;border:1px solid #334155;}
 #timer-progress-bar{height:100%;background:linear-gradient(to right,#dc2626,#f43f5e,#f59e0b);border-radius:999px;transition:width .2s linear;width:100%;}
 #timer-text-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff;font-family:monospace;text-shadow:0 1px 2px rgba(0,0,0,.8);}
-#piano-play-area{flex:1;min-height:0;display:flex;flex-direction:column;gap:0;position:relative;}
-/* ピアノロール: 縦横スクロール可、スクロールバー非表示で鍵盤と幅を一致 */
+
+/* ======================================================= */
+/* ピアノエリア：親の #piano-h-scroll が横スクロールを担当 */
+/* #piano-inner の中にピアノロールと鍵盤を並べる        */
+/* ======================================================= */
+#piano-play-area{
+  flex:1;min-height:0;
+  display:flex;flex-direction:column;gap:0;
+  position:relative;overflow:hidden;
+}
+#piano-h-scroll{
+  flex:1;min-height:0;
+  overflow-x:auto;overflow-y:hidden;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;-ms-overflow-style:none;
+  touch-action:pan-x;
+  position:relative;
+}
+#piano-h-scroll::-webkit-scrollbar{display:none;width:0;height:0;}
+#piano-inner{
+  display:flex;flex-direction:column;
+  height:100%;
+  min-width:100%;
+  position:relative;
+}
 #piano-roll-viewport{
   flex:1;min-height:0;
-  overflow:auto;
+  overflow-y:auto;overflow-x:hidden;
   background:#0d141e;
   border-radius:6px 6px 0 0;
-  border:1px solid #1e293b;
-  border-bottom:0;
+  border:1px solid #1e293b;border-bottom:0;
   -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;
-  -ms-overflow-style:none;
+  scrollbar-width:none;-ms-overflow-style:none;
   position:relative;
-  touch-action:pan-x pan-y;
+  touch-action:pan-y;
 }
 #piano-roll-viewport::-webkit-scrollbar{display:none;width:0;height:0;}
 #piano-roll-content{position:relative;}
@@ -56,7 +77,7 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
 .note-block.is-played{opacity:.15;filter:grayscale(.7);}
 .note-block.is-current{background:linear-gradient(180deg,#a7f3d0,#10b981);border-color:#6ee7b7;box-shadow:0 0 12px rgba(16,185,129,.7);}
 .hit-line{position:absolute;left:0;width:100%;height:2px;background:#f43f5e;box-shadow:0 0 10px #f43f5e,0 0 3px #fff;pointer-events:none;z-index:9;display:none;}
-/* 鍵盤: 横スクロールはピアノロールから同期、touchは演奏優先 */
+
 #piano-keyboard-viewport{
   flex-shrink:0;height:180px;
   overflow:hidden;
@@ -79,6 +100,7 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
 @keyframes keyHintWhite{from{background:linear-gradient(90deg,#fde68a,#fffbeb 40%,#fcd34d)}to{background:linear-gradient(90deg,#fbbf24,#fff8dc 40%,#f59e0b)}}
 @keyframes keyHintBlack{from{background:linear-gradient(90deg,#78350f,#fbbf24 50%,#78350f)}to{background:linear-gradient(90deg,#b45309,#fcd34d 50%,#b45309)}}
 .key-label{position:absolute;left:0;right:0;bottom:5px;color:#39414d;font-size:10px;font-weight:850;text-align:center;pointer-events:none;}
+
 #center-start-overlay{position:absolute;inset:0;background:rgba(2,6,23,.85);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;transition:opacity .3s;gap:8px;padding:12px;}
 #center-start-overlay.hidden-start{opacity:0;pointer-events:none;}
 .modal-hidden{display:none !important;}
@@ -136,8 +158,12 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
   <div id="canvas-area">
     <div id="timer-bar"><div id="timer-progress-bar"></div><span id="timer-text-overlay">01:00</span></div>
     <div id="piano-play-area">
-      <div id="piano-roll-viewport"><div id="piano-roll-content"></div></div>
-      <div id="piano-keyboard-viewport"><div id="piano-keyboard-content"></div></div>
+      <div id="piano-h-scroll">
+        <div id="piano-inner">
+          <div id="piano-roll-viewport"><div id="piano-roll-content"></div></div>
+          <div id="piano-keyboard-viewport"><div id="piano-keyboard-content"></div></div>
+        </div>
+      </div>
     </div>
     <div id="center-start-overlay">
       <span class="text-xs font-bold tracking-widest text-amber-400 uppercase">次のピアニスト</span>
@@ -299,11 +325,11 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
 
 <script>
 // ============ 定数 ============
-const STORAGE_KEY_PLAYERS='atete_pianist_players_v4';
-const STORAGE_KEY_SETTINGS='atete_pianist_settings_v4';
-const STORAGE_KEY_SONGS='atete_pianist_songs_v4';
-const STORAGE_KEY_SAFE_MARGIN='atete_pianist_safe_margin_v4';
-const STORAGE_KEY_PASSED='atete_pianist_passed_v4';
+const STORAGE_KEY_PLAYERS='atete_pianist_players_v5';
+const STORAGE_KEY_SETTINGS='atete_pianist_settings_v5';
+const STORAGE_KEY_SONGS='atete_pianist_songs_v5';
+const STORAGE_KEY_SAFE_MARGIN='atete_pianist_safe_margin_v5';
+const STORAGE_KEY_PASSED='atete_pianist_passed_v5';
 
 const EMOJI_OPTIONS=["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐦","🐣","🐙","🦑","🐸","🦖"];
 const COLOR_OPTIONS=[
@@ -366,10 +392,9 @@ let roundScores={};
 let roundRecordings=[];
 let passedSongCounts={};
 
-let hintLevel=0;
-let soundHintNoteIndex=0;
-let soundHintTargetMidi=null;
-let rhythmHintProgress=0;
+let hintLevel=0;                 // 0=OFF, 1=音ヒント, 2=音+リズム
+let currentNoteIndex=0;          // 現在位置の音符インデックス（音ヒント・リズムヒント共通）
+let soundHintTargetMidi=null;    // 現在光っている鍵盤のMIDI
 
 let audioCtx=null;
 let masterGain=null;
@@ -466,7 +491,7 @@ function commitSafeMargin(v){
   saveStorageData();
 }
 
-// ============ オーディオ（低遅延） ============
+// ============ オーディオ ============
 function ensureAudio(){
   if(!audioCtx){
     try{
@@ -877,10 +902,10 @@ function parseImportedSongs(data){
   return out;
 }
 
-// ============ 鍵盤 ============
+// ============ 鍵盤ジオメトリ ============
 function buildKeyGeometry(){
   keyGeometry=new Map();
-  const vp=document.getElementById('piano-keyboard-viewport');
+  const vp=document.getElementById('piano-h-scroll');
   const availW=vp?vp.clientWidth:280;
   let whiteCount=0;
   for(let m=FIRST_MIDI;m<=LAST_MIDI;m++){
@@ -936,15 +961,19 @@ function renderKeyboard(){
     inner.appendChild(key);
   }
   inner.style.width=pianoWidth+'px';
-  // 現在のピアノロールのスクロール位置を鍵盤にも反映
-  const pr=document.getElementById('piano-roll-viewport');
-  if(pr)kb.scrollLeft=pr.scrollLeft;
+  // 親の内側ラッパーにも幅を反映
+  const pi=document.getElementById('piano-inner');
+  if(pi)pi.style.width=pianoWidth+'px';
 }
+
+// 座標→鍵盤
 function keyAtPoint(clientX,clientY){
-  const vp=document.getElementById('piano-keyboard-viewport');
-  const rect=vp.getBoundingClientRect();
-  // ピアノロールと鍵盤のX位置を一致させる（左ボーダー分のみ補正）
-  const x=clientX-rect.left+vp.scrollLeft;
+  const kb=document.getElementById('piano-keyboard-viewport');
+  const rect=kb.getBoundingClientRect();
+  // 親の横スクロール量を使う（ピアノロールと鍵盤で共有）
+  const hScroller=document.getElementById('piano-h-scroll');
+  const scrollLeft=hScroller?hScroller.scrollLeft:0;
+  const x=clientX-rect.left+scrollLeft;
   const y=clientY-rect.top;
   if(y<0||y>rect.height)return null;
   const blackH=Math.round(rect.height*.62);
@@ -971,7 +1000,6 @@ function renderPianoRoll(){
   const vp=document.getElementById('piano-roll-viewport');
   if(!content||!vp)return;
   const prevScrollTop=vp.scrollTop;
-  const prevScrollLeft=vp.scrollLeft;
   const totalUnits=currentSong?currentSong.events.reduce((a,e)=>a+e.duration,0):16;
   const contentHeight=(totalUnits+TOP_PAD_UNITS)*ROW_H;
   content.style.height=contentHeight+'px';
@@ -1013,8 +1041,8 @@ function renderPianoRoll(){
             block.style.left=g.left+'px';block.style.width=g.width+'px';
             block.style.top=yTop+'px';
             block.style.height=Math.max(6,yBottom-yTop-2)+'px';
-            if(noteIdx<rhythmHintProgress)block.classList.add('is-played');
-            if(noteIdx===rhythmHintProgress)block.classList.add('is-current');
+            if(noteIdx<currentNoteIndex)block.classList.add('is-played');
+            if(noteIdx===currentNoteIndex)block.classList.add('is-current');
             content.appendChild(block);
           }
         }
@@ -1027,12 +1055,7 @@ function renderPianoRoll(){
   hit.id='piano-roll-hitline';
   hit.className='hit-line';
   content.appendChild(hit);
-  // スクロール位置復元
   if(vp.scrollTop!==prevScrollTop)vp.scrollTop=prevScrollTop;
-  if(vp.scrollLeft!==prevScrollLeft)vp.scrollLeft=prevScrollLeft;
-  // 鍵盤のscrollLeftを同期
-  const kb=document.getElementById('piano-keyboard-viewport');
-  if(kb)kb.scrollLeft=vp.scrollLeft;
 }
 function showHitLine(){
   const h=document.getElementById('piano-roll-hitline');if(!h)return;
@@ -1063,6 +1086,19 @@ function cursorOfNoteIndex(idx){
     cursor+=ev.duration;
   }
   return cursor;
+}
+// 親の横スクロールコンテナを、対象の鍵盤が見える位置へ移動
+function scrollKeyboardKeyIntoView(midi){
+  const h=document.getElementById('piano-h-scroll');
+  if(!h)return;
+  const g=keyGeometry.get(midi);
+  if(!g)return;
+  const center=g.left+g.width/2;
+  const visibleLeft=h.scrollLeft;
+  const visibleRight=h.scrollLeft+h.clientWidth;
+  if(center<visibleLeft+h.clientWidth*.2||center>visibleRight-h.clientWidth*.2){
+    h.scrollTo({left:Math.max(0,center-h.clientWidth/2),behavior:'smooth'});
+  }
 }
 
 // ============ 曲の準備 ============
@@ -1109,14 +1145,23 @@ function updateHintButtonUI(){
   else if(hintLevel===1){b.textContent='🎵 音ヒント ON';b.classList.add('level1');}
   else{b.textContent='🎼 リズム ON（最大）';b.classList.add('level2','maxed');}
 }
-function clearHintGlow(){document.querySelectorAll('.is-hint-key').forEach(el=>el.classList.remove('is-hint-key'));}
+function clearHintGlow(){
+  document.querySelectorAll('.is-hint-key').forEach(el=>el.classList.remove('is-hint-key'));
+  soundHintTargetMidi=null;
+}
+// 現在の音符（currentNoteIndex）に対応する鍵盤を光らせる
 function showSoundHintTarget(){
   clearHintGlow();
   if(!currentSong)return;
+  if(hintLevel===0)return;
   const notes=currentSong.events.filter(e=>e.type==='note');
   if(!notes.length){soundHintTargetMidi=null;return;}
-  if(soundHintNoteIndex>=notes.length)soundHintNoteIndex=0;
-  const note=notes[soundHintNoteIndex];
+  if(currentNoteIndex>=notes.length){
+    // 曲の最後まで到達
+    soundHintTargetMidi=null;
+    return;
+  }
+  const note=notes[currentNoteIndex];
   const playMidi=note.midi+currentSongTranspose*12;
   soundHintTargetMidi=playMidi;
   const el=document.querySelector(`.piano-key[data-midi="${playMidi}"]`);
@@ -1125,7 +1170,6 @@ function showSoundHintTarget(){
   if(audioCtx)pianoVoice(playMidi,audioCtx.currentTime+.005,.35,.72);
   scrollKeyboardKeyIntoView(playMidi);
 }
-// ヒントボタン: 0→1→2 の一方向のみ
 function cycleHintWithSE(){
   playButtonSE();
   if(!isGaming||!currentSong)return;
@@ -1135,18 +1179,17 @@ function cycleHintWithSE(){
   }
   hintLevel++;
   if(hintLevel===1){
-    soundHintNoteIndex=0;
+    currentNoteIndex=0;
     showSoundHintTarget();
     renderPianoRoll();
     hideHitLine();
     speakText('音ヒント オン');
     showToast('音ヒント ON（獲得予定 2P）');
   }else if(hintLevel===2){
-    // リズムヒント開始時は鍵盤の光も最初の音符から表示
-    soundHintNoteIndex=0;
-    rhythmHintProgress=0;
+    // リズムヒント：現在の音符位置から鍵盤も音符も表示
+    currentNoteIndex=0;
     clearHintGlow();
-    showSoundHintTarget();  // 最初の音符を光らせる
+    showSoundHintTarget();
     renderPianoRoll();
     showHitLine();
     const cursor=cursorOfNoteIndex(0);
@@ -1156,20 +1199,6 @@ function cycleHintWithSE(){
   }
   updateHintButtonUI();
   updatePianistPtsDisplay();
-}
-function scrollKeyboardKeyIntoView(midi){
-  const pr=document.getElementById('piano-roll-viewport');
-  const el=document.querySelector(`.piano-key[data-midi="${midi}"]`);
-  if(!pr||!el)return;
-  const rect=pr.getBoundingClientRect();
-  const keyLeft=parseFloat(el.style.left);
-  const keyW=parseFloat(el.style.width);
-  const center=keyLeft+keyW/2;
-  const visibleLeft=pr.scrollLeft;
-  const visibleRight=pr.scrollLeft+rect.width;
-  if(center<visibleLeft+rect.width*.2||center>visibleRight-rect.width*.2){
-    pr.scrollTo({left:Math.max(0,center-rect.width/2),behavior:'smooth'});
-  }
 }
 
 // ============ 鍵盤操作 ============
@@ -1182,26 +1211,29 @@ function stopSustained(){
   if(currentSustainedVoice){try{currentSustainedVoice.stop();}catch(_){}currentSustainedVoice=null;}
   if(currentSustainedMidi!=null){setKeyPressed(currentSustainedMidi,false);currentSustainedMidi=null;}
 }
+// 正しい鍵盤が押されたら、音符と鍵盤の光を次の位置へ進める
 function onNotePlayed(midi){
-  if(hintLevel>=1&&soundHintTargetMidi!=null&&midi===soundHintTargetMidi){
-    soundHintNoteIndex++;
-    showSoundHintTarget();
+  if(hintLevel===0||!currentSong)return;
+  const notes=currentSong.events.filter(e=>e.type==='note');
+  if(currentNoteIndex>=notes.length)return;
+  const expected=notes[currentNoteIndex].midi+currentSongTranspose*12;
+  if(midi!==expected)return;
+  // リズムヒント中なら、今の音符を is-played に
+  if(hintLevel>=2){
+    const block=document.querySelector(`.note-block[data-note-idx="${currentNoteIndex}"]`);
+    if(block){block.classList.remove('is-current');block.classList.add('is-played');}
   }
-  if(hintLevel>=2&&currentSong){
-    const notes=currentSong.events.filter(e=>e.type==='note');
-    if(rhythmHintProgress<notes.length){
-      const expected=notes[rhythmHintProgress].midi+currentSongTranspose*12;
-      if(midi===expected){
-        const prevBlock=document.querySelector(`.note-block[data-note-idx="${rhythmHintProgress}"]`);
-        if(prevBlock){prevBlock.classList.remove('is-current');prevBlock.classList.add('is-played');}
-        rhythmHintProgress++;
-        const nextBlock=document.querySelector(`.note-block[data-note-idx="${rhythmHintProgress}"]`);
-        if(nextBlock)nextBlock.classList.add('is-current');
-        const cursor=cursorOfNoteIndex(rhythmHintProgress);
-        scrollUnitToKeyboard(cursor,true);
-      }
-    }
+  currentNoteIndex++;
+  if(hintLevel>=2){
+    // 次の音符を is-current に
+    const nextBlock=document.querySelector(`.note-block[data-note-idx="${currentNoteIndex}"]`);
+    if(nextBlock)nextBlock.classList.add('is-current');
+    // 次の音符が鍵盤と接する位置へスクロール
+    const cursor=cursorOfNoteIndex(currentNoteIndex);
+    scrollUnitToKeyboard(cursor,true);
   }
+  // 次の鍵盤を光らせる（音符と完全連動）
+  showSoundHintTarget();
 }
 function handlePointerDown(e){
   if(isPaused)return;
@@ -1234,25 +1266,12 @@ function handlePointerUp(e){
   stopSustained();
 }
 function bindKeyboardEvents(){
-  const vp=document.getElementById('piano-keyboard-viewport');if(!vp)return;
-  vp.addEventListener('pointerdown',handlePointerDown,{passive:false});
-  vp.addEventListener('pointermove',handlePointerMove,{passive:false});
-  vp.addEventListener('pointerup',handlePointerUp);
-  vp.addEventListener('pointercancel',handlePointerUp);
-  vp.addEventListener('pointerleave',handlePointerUp);
-}
-// ピアノロールの横スクロールを鍵盤に同期
-function bindScrollSync(){
-  const pr=document.getElementById('piano-roll-viewport');
-  const kb=document.getElementById('piano-keyboard-viewport');
-  if(!pr||!kb)return;
-  let syncing=false;
-  pr.addEventListener('scroll',()=>{
-    if(syncing)return;
-    syncing=true;
-    kb.scrollLeft=pr.scrollLeft;
-    requestAnimationFrame(()=>{syncing=false;});
-  },{passive:true});
+  const kb=document.getElementById('piano-keyboard-viewport');if(!kb)return;
+  kb.addEventListener('pointerdown',handlePointerDown,{passive:false});
+  kb.addEventListener('pointermove',handlePointerMove,{passive:false});
+  kb.addEventListener('pointerup',handlePointerUp);
+  kb.addEventListener('pointercancel',handlePointerUp);
+  kb.addEventListener('pointerleave',handlePointerUp);
 }
 
 // ============ ゲーム進行 ============
@@ -1308,7 +1327,7 @@ function stopGame(){
   updateHeaderButton();
   hideHitLine();
   clearHintGlow();
-  hintLevel=0;soundHintTargetMidi=null;soundHintNoteIndex=0;rhythmHintProgress=0;
+  hintLevel=0;currentNoteIndex=0;
   updateHintButtonUI();
   updatePianistPtsDisplay();
   renderPianoRoll();
@@ -1330,24 +1349,26 @@ function nextSong(){
   currentSong=songs[idx];
   prepareSong(currentSong);
   currentSongStartTime=timerSeconds;
-  hintLevel=0;soundHintTargetMidi=null;soundHintNoteIndex=0;rhythmHintProgress=0;
+
+  // === お題が変わったのでヒントと鍵盤の光を完全リセット ===
+  hintLevel=0;
+  currentNoteIndex=0;
   clearHintGlow();
   updateHintButtonUI();
   updatePianistPtsDisplay();
+
   document.getElementById('word-display').innerText=currentSong.name;
+
   buildKeyGeometry();
   renderKeyboard();
-  // 鍵盤をC4付近に初期スクロール
-  const kb=document.getElementById('piano-keyboard-viewport');
-  if(kb){const g=keyGeometry.get(60);if(g)kb.scrollLeft=Math.max(0,g.left-kb.clientWidth/2);}
+  // 親の横スクロールを初期位置（C4付近）へ
+  const h=document.getElementById('piano-h-scroll');
+  if(h){const g=keyGeometry.get(60);if(g)h.scrollLeft=Math.max(0,g.left-h.clientWidth/2);}
+
   renderPianoRoll();
   hideHitLine();
-  requestAnimationFrame(()=>{
-    scrollUnitToKeyboard(0,false);
-    // 初期位置の左スクロールを鍵盤にも反映
-    const pr=document.getElementById('piano-roll-viewport');
-    if(pr&&kb)kb.scrollLeft=pr.scrollLeft;
-  });
+  requestAnimationFrame(()=>scrollUnitToKeyboard(0,false));
+
   startRoundRecording();
   const bonus=passedSongCounts[currentSong.name]||0;
   if(bonus>0){
@@ -1452,9 +1473,7 @@ function playReferenceMelody(){
   const startTime=performance.now();
   if(hintLevel<2){
     hintLevel=2;
-    // リズムヒントに切替時、鍵盤の光も最初から
-    soundHintNoteIndex=0;
-    rhythmHintProgress=0;
+    currentNoteIndex=0;
     clearHintGlow();
     showSoundHintTarget();
     updateHintButtonUI();
@@ -1462,7 +1481,7 @@ function playReferenceMelody(){
   }
   renderPianoRoll();
   showHitLine();
-  rhythmHintProgress=0;
+  currentNoteIndex=0;
   requestAnimationFrame(()=>scrollUnitToKeyboard(0,false));
   const tick=()=>{
     const elapsed=(performance.now()-startTime)/1000;
@@ -1784,7 +1803,7 @@ async function resetScores(){
 function backupDataWithSE(){playButtonSE();exportData();}
 function restoreDataWithSE(){playButtonSE();document.getElementById('restore-file-input').click();}
 function exportData(){
-  const data={version:4,players,songs,settings:{enableSpeech,pianistPointEnabled,passedSongCounts,volume:currentVolume},safeMargin};
+  const data={version:5,players,songs,settings:{enableSpeech,pianistPointEnabled,passedSongCounts,volume:currentVolume},safeMargin};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=`atete_pianist_backup_${Date.now()}.json`;a.click();
@@ -1833,7 +1852,6 @@ window.addEventListener('DOMContentLoaded',()=>{
   updateHintButtonUI();
   updatePianistPtsDisplay();
   bindKeyboardEvents();
-  bindScrollSync();
   saveStorageData();
   window.addEventListener('resize',()=>{
     applyLayout();
@@ -1845,12 +1863,10 @@ window.addEventListener('DOMContentLoaded',()=>{
   const unlockOnce=()=>{warmupAudio();document.removeEventListener('pointerdown',unlockOnce);};
   document.addEventListener('pointerdown',unlockOnce,{once:true,passive:true});
   requestAnimationFrame(()=>{
-    const kb=document.getElementById('piano-keyboard-viewport');
-    if(!kb)return;
+    const h=document.getElementById('piano-h-scroll');
+    if(!h)return;
     const g=keyGeometry.get(60);
-    if(g)kb.scrollLeft=Math.max(0,g.left-kb.clientWidth/2);
-    const pr=document.getElementById('piano-roll-viewport');
-    if(pr)pr.scrollLeft=kb.scrollLeft;
+    if(g)h.scrollLeft=Math.max(0,g.left-h.clientWidth/2);
   });
 });
 </script>
