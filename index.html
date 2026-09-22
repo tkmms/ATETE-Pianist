@@ -31,39 +31,11 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
 #timer-bar{height:12px;background:#1e293b;border-radius:999px;overflow:hidden;position:relative;flex-shrink:0;border:1px solid #334155;}
 #timer-progress-bar{height:100%;background:linear-gradient(to right,#dc2626,#f43f5e,#f59e0b);border-radius:999px;transition:width .2s linear;width:100%;}
 #timer-text-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff;font-family:monospace;text-shadow:0 1px 2px rgba(0,0,0,.8);}
-
-#piano-play-area{
-  flex:1;min-height:0;
-  display:flex;flex-direction:column;gap:0;
-  position:relative;overflow:hidden;
-}
-#piano-h-scroll{
-  flex:1;min-height:0;
-  overflow-x:auto;overflow-y:hidden;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;-ms-overflow-style:none;
-  touch-action:pan-x;
-  position:relative;
-}
+#piano-play-area{flex:1;min-height:0;display:flex;flex-direction:column;gap:0;position:relative;overflow:hidden;}
+#piano-h-scroll{flex:1;min-height:0;overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;touch-action:pan-x;position:relative;}
 #piano-h-scroll::-webkit-scrollbar{display:none;width:0;height:0;}
-#piano-inner{
-  display:flex;flex-direction:column;
-  height:100%;
-  min-width:100%;
-  position:relative;
-}
-#piano-roll-viewport{
-  flex:1;min-height:0;
-  overflow-y:auto;overflow-x:hidden;
-  background:#0d141e;
-  border-radius:6px 6px 0 0;
-  border:1px solid #1e293b;border-bottom:0;
-  -webkit-overflow-scrolling:touch;
-  scrollbar-width:none;-ms-overflow-style:none;
-  position:relative;
-  /* 縦スクロール（ピアノロール内）と横スクロール（親のpiano-h-scroll）を両立 */
-  touch-action:pan-x pan-y;
-}
+#piano-inner{display:flex;flex-direction:column;height:100%;min-width:100%;position:relative;}
+#piano-roll-viewport{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;background:#0d141e;border-radius:6px 6px 0 0;border:1px solid #1e293b;border-bottom:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;position:relative;touch-action:pan-x pan-y;}
 #piano-roll-viewport::-webkit-scrollbar{display:none;width:0;height:0;}
 #piano-roll-content{position:relative;}
 .pitch-lane{position:absolute;top:0;bottom:0;border-right:1px solid rgba(183,205,235,.08);background:rgba(255,255,255,.01);}
@@ -74,17 +46,7 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
 .note-block.is-played{opacity:.15;filter:grayscale(.7);}
 .note-block.is-current{background:linear-gradient(180deg,#a7f3d0,#10b981);border-color:#6ee7b7;box-shadow:0 0 12px rgba(16,185,129,.7);}
 .hit-line{position:absolute;left:0;width:100%;height:2px;background:#f43f5e;box-shadow:0 0 10px #f43f5e,0 0 3px #fff;pointer-events:none;z-index:9;display:none;}
-
-#piano-keyboard-viewport{
-  flex-shrink:0;height:180px;
-  overflow:hidden;
-  background:#080b10;
-  border-radius:0 0 6px 6px;
-  border:1px solid #1e293b;
-  border-top:2px solid #f43f5e;
-  touch-action:none;
-  position:relative;
-}
+#piano-keyboard-viewport{flex-shrink:0;height:180px;overflow:hidden;background:#080b10;border-radius:0 0 6px 6px;border:1px solid #1e293b;border-top:2px solid #f43f5e;touch-action:none;position:relative;}
 #piano-keyboard-content{position:relative;height:100%;}
 .piano-key{position:absolute;top:0;padding:0;border:0;border-radius:0 0 5px 5px;overflow:hidden;}
 .white-key{z-index:1;border-right:1px solid #7d8490;border-bottom:6px solid #9da5b0;background:linear-gradient(90deg,#d6d9df 0,#fff 12%,#f8f9fb 76%,#bdc2ca 100%);box-shadow:inset 0 -10px 14px rgba(60,67,77,.12),inset 0 1px #fff;}
@@ -97,7 +59,6 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
 @keyframes keyHintWhite{from{background:linear-gradient(90deg,#fde68a,#fffbeb 40%,#fcd34d)}to{background:linear-gradient(90deg,#fbbf24,#fff8dc 40%,#f59e0b)}}
 @keyframes keyHintBlack{from{background:linear-gradient(90deg,#78350f,#fbbf24 50%,#78350f)}to{background:linear-gradient(90deg,#b45309,#fcd34d 50%,#b45309)}}
 .key-label{position:absolute;left:0;right:0;bottom:5px;color:#39414d;font-size:10px;font-weight:850;text-align:center;pointer-events:none;}
-
 #center-start-overlay{position:absolute;inset:0;background:rgba(2,6,23,.85);backdrop-filter:blur(4px);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:20;transition:opacity .3s;gap:8px;padding:12px;}
 #center-start-overlay.hidden-start{opacity:0;pointer-events:none;}
 .modal-hidden{display:none !important;}
@@ -322,11 +283,14 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
 
 <script>
 // ============ 定数 ============
-const STORAGE_KEY_PLAYERS='atete_pianist_players_v6';
-const STORAGE_KEY_SETTINGS='atete_pianist_settings_v6';
-const STORAGE_KEY_SONGS='atete_pianist_songs_v6';
-const STORAGE_KEY_SAFE_MARGIN='atete_pianist_safe_margin_v6';
-const STORAGE_KEY_PASSED='atete_pianist_passed_v6';
+const STORAGE_KEY='atete_pianist_state_v1'; // 安定キー（変更しない）
+const LEGACY_KEYS={
+  players:['atete_pianist_players_v1','atete_pianist_players_v2','atete_pianist_players_v3','atete_pianist_players_v4','atete_pianist_players_v5','atete_pianist_players_v6'],
+  songs:['atete_pianist_songs_v1','atete_pianist_songs_v2','atete_pianist_songs_v3','atete_pianist_songs_v4','atete_pianist_songs_v5','atete_pianist_songs_v6'],
+  settings:['atete_pianist_settings_v1','atete_pianist_settings_v2','atete_pianist_settings_v3','atete_pianist_settings_v4','atete_pianist_settings_v5','atete_pianist_settings_v6'],
+  safeMargin:['atete_pianist_safe_margin_v1','atete_pianist_safe_margin_v2','atete_pianist_safe_margin_v3','atete_pianist_safe_margin_v4','atete_pianist_safe_margin_v5','atete_pianist_safe_margin_v6'],
+  passed:['atete_pianist_passed_v1','atete_pianist_passed_v2','atete_pianist_passed_v3','atete_pianist_passed_v4','atete_pianist_passed_v5','atete_pianist_passed_v6']
+};
 
 const EMOJI_OPTIONS=["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐦","🐣","🐙","🦑","🐸","🦖"];
 const COLOR_OPTIONS=[
@@ -392,6 +356,10 @@ let passedSongCounts={};
 let hintLevel=0;
 let currentNoteIndex=0;
 let soundHintTargetMidi=null;
+
+// 正解後の参考メロディ（ループ再生）
+let referenceLoopActive=false;
+let referenceRaf=0;
 
 let audioCtx=null;
 let masterGain=null;
@@ -672,18 +640,28 @@ function stopRoundRecording(){
 
 // ============ ストレージ ============
 function safeParseJson(str,fallback){
-  if(!str)return fallback;
+  if(str==null)return fallback;
   try{return JSON.parse(str);}catch(e){console.warn('JSON parse error',e);return fallback;}
+}
+function findInLegacy(list){
+  for(const k of list){
+    try{
+      const v=localStorage.getItem(k);
+      if(v!=null)return {key:k,value:v};
+    }catch(_){}
+  }
+  return null;
 }
 function normalizePlayer(p,idx){
   const def=DEFAULT_PLAYERS[idx]||DEFAULT_PLAYERS[0];
+  const src=(p&&typeof p==='object')?p:{};
   return {
-    id:p.id!==undefined?p.id:def.id,
-    name:typeof p.name==='string'&&p.name?p.name:def.name,
-    emoji:EMOJI_OPTIONS.includes(p.emoji)?p.emoji:def.emoji,
-    colorIdx:(typeof p.colorIdx==='number')?p.colorIdx:(idx%COLOR_OPTIONS.length),
-    active:typeof p.active==='boolean'?p.active:def.active,
-    score:typeof p.score==='number'?p.score:0
+    id:(src.id!==undefined)?src.id:def.id,
+    name:(typeof src.name==='string'&&src.name)?src.name:def.name,
+    emoji:EMOJI_OPTIONS.includes(src.emoji)?src.emoji:def.emoji,
+    colorIdx:(typeof src.colorIdx==='number')?src.colorIdx:(idx%COLOR_OPTIONS.length),
+    active:(typeof src.active==='boolean')?src.active:def.active,
+    score:(typeof src.score==='number')?src.score:0
   };
 }
 function normalizeSong(s){
@@ -695,7 +673,7 @@ function normalizeSong(s){
     if(e.type==='rest'){events.push({type:'rest',midi:0,duration});}
     else if(e.type==='note'){
       const midi=Math.floor(Number(e.midi));
-      if(midi>=12&&midi<=120)events.push({type:'note',midi,duration});
+      if(midi>=0&&midi<=127)events.push({type:'note',midi,duration});
     }
   }
   if(!events.length)return null;
@@ -706,56 +684,104 @@ function normalizeSong(s){
     unitSeconds:Math.max(.05,Math.min(1,Number(s.unitSeconds)||0.136))
   };
 }
+
 function loadStorageData(){
-  const sm=localStorage.getItem(STORAGE_KEY_SAFE_MARGIN);
-  if(sm!==null){const n=parseInt(sm,10);if(Number.isFinite(n))safeMargin=n;}
+  let state=null;
+  let source='(defaults)';
 
-  const sp=safeParseJson(localStorage.getItem(STORAGE_KEY_PASSED),{});
-  if(sp&&typeof sp==='object')passedSongCounts=sp;
+  // 1) 安定キーから読み込み
+  try{
+    const raw=localStorage.getItem(STORAGE_KEY);
+    if(raw!=null){
+      const parsed=safeParseJson(raw,null);
+      if(parsed&&typeof parsed==='object'){state=parsed;source='primary';}
+    }
+  }catch(e){console.warn('primary load error',e);}
 
-  let loadedPlayers=null;
-  try{loadedPlayers=safeParseJson(localStorage.getItem(STORAGE_KEY_PLAYERS),null);}catch(_){}
-  if(Array.isArray(loadedPlayers)&&loadedPlayers.length){
-    players=loadedPlayers.map((p,idx)=>normalizePlayer(p||{},idx));
-    while(players.length<DEFAULT_PLAYERS.length){
-      const idx=players.length;
-      players.push({...DEFAULT_PLAYERS[idx]});
+  // 2) 旧キーから移行
+  if(!state){
+    const legacy={};
+    let found=false;
+    const p=findInLegacy(LEGACY_KEYS.players);
+    if(p){const v=safeParseJson(p.value,null);if(Array.isArray(v)){legacy.players=v;found=true;}}
+    const s=findInLegacy(LEGACY_KEYS.songs);
+    if(s){const v=safeParseJson(s.value,null);if(Array.isArray(v)){legacy.songs=v;found=true;}}
+    const st=findInLegacy(LEGACY_KEYS.settings);
+    if(st){const v=safeParseJson(st.value,null);if(v&&typeof v==='object'){legacy.settings=v;found=true;}}
+    const sm=findInLegacy(LEGACY_KEYS.safeMargin);
+    if(sm){const v=parseInt(sm.value,10);if(Number.isFinite(v)){legacy.safeMargin=v;found=true;}}
+    const ps=findInLegacy(LEGACY_KEYS.passed);
+    if(ps){const v=safeParseJson(ps.value,null);if(v&&typeof v==='object'){legacy.passed=v;found=true;}}
+    if(found){
+      state=legacy;
+      source='legacy-migration';
+    }
+  }
+
+  // 3) 適用
+  if(state){
+    if(Array.isArray(state.players)&&state.players.length){
+      players=state.players.map((p,idx)=>normalizePlayer(p,idx));
+      while(players.length<DEFAULT_PLAYERS.length){
+        const idx=players.length;
+        players.push({...DEFAULT_PLAYERS[idx]});
+      }
+    }else{
+      players=DEFAULT_PLAYERS.map(p=>({...p}));
+    }
+
+    if(Array.isArray(state.songs)){
+      songs=state.songs.map(normalizeSong).filter(Boolean);
+    }else{
+      songs=[];
+    }
+
+    if(state.settings&&typeof state.settings==='object'){
+      const s=state.settings;
+      if(s.enableSpeech!==undefined)enableSpeech=Boolean(s.enableSpeech);
+      if(s.pianistPointEnabled!==undefined)pianistPointEnabled=Boolean(s.pianistPointEnabled);
+      if(s.volume!==undefined){const v=Number(s.volume);if(Number.isFinite(v))currentVolume=Math.max(0,Math.min(2,v));}
+      if(s.passedSongCounts&&typeof s.passedSongCounts==='object')passedSongCounts=s.passedSongCounts;
+    }
+    // 旧形式: passedSongCounts が settings の外
+    if(state.passed&&typeof state.passed==='object'&&!passedSongCounts){
+      passedSongCounts=state.passed;
+    }
+    if(state.safeMargin!==undefined){
+      const n=Number(state.safeMargin);
+      if(Number.isFinite(n))safeMargin=n;
     }
   }else{
     players=DEFAULT_PLAYERS.map(p=>({...p}));
-  }
-
-  let loadedSongs=null;
-  try{loadedSongs=safeParseJson(localStorage.getItem(STORAGE_KEY_SONGS),null);}catch(_){}
-  if(Array.isArray(loadedSongs)){
-    songs=loadedSongs.map(normalizeSong).filter(Boolean);
-  }else{
     songs=[];
   }
 
-  const settings=safeParseJson(localStorage.getItem(STORAGE_KEY_SETTINGS),null);
-  if(settings&&typeof settings==='object'){
-    enableSpeech=settings.enableSpeech!==undefined?Boolean(settings.enableSpeech):true;
-    pianistPointEnabled=settings.pianistPointEnabled!==undefined?Boolean(settings.pianistPointEnabled):true;
-    if(settings.volume!==undefined){const v=Number(settings.volume);if(Number.isFinite(v))currentVolume=Math.max(0,Math.min(2,v));}
-  }
+  console.log(`[Pianist] Loaded from ${source}: ${players.length} players, ${songs.length} songs, safeMargin=${safeMargin}`);
 
+  // UI反映
   const st=document.getElementById('speech-toggle');if(st)st.checked=enableSpeech;
   const pt=document.getElementById('pianist-point-toggle');if(pt)pt.checked=pianistPointEnabled;
   const vs=document.getElementById('volume-slider');if(vs)vs.value=String(Math.round(currentVolume*100));
   const vv=document.getElementById('volume-value');if(vv)vv.innerText=Math.round(currentVolume*100)+'%';
 }
+
 function saveStorageData(){
   try{
-    localStorage.setItem(STORAGE_KEY_PLAYERS,JSON.stringify(players));
-    localStorage.setItem(STORAGE_KEY_SETTINGS,JSON.stringify({enableSpeech,pianistPointEnabled,volume:currentVolume}));
-    localStorage.setItem(STORAGE_KEY_SAFE_MARGIN,String(safeMargin));
-    localStorage.setItem(STORAGE_KEY_PASSED,JSON.stringify(passedSongCounts));
-    const lightSongs=songs.map(s=>({
-      id:s.id,name:s.name,unitSeconds:s.unitSeconds,
-      events:s.events.map(e=>({type:e.type,midi:e.midi,duration:e.duration}))
-    }));
-    localStorage.setItem(STORAGE_KEY_SONGS,JSON.stringify(lightSongs));
+    const state={
+      players,
+      songs:songs.map(s=>({
+        id:s.id,name:s.name,unitSeconds:s.unitSeconds,
+        events:s.events.map(e=>({type:e.type,midi:e.midi,duration:e.duration}))
+      })),
+      settings:{
+        enableSpeech,
+        pianistPointEnabled,
+        volume:currentVolume,
+        passedSongCounts
+      },
+      safeMargin
+    };
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
     return true;
   }catch(e){
     console.error('saveStorageData failed:',e);
@@ -875,13 +901,13 @@ function parseImportedSongs(data){
         const midi=Math.floor(Number(item[0]));
         const duration=Math.max(1,Math.floor(Number(item[1])||1));
         if(midi===0)events.push({type:'rest',midi:0,duration});
-        else if(midi>=12&&midi<=120)events.push({type:'note',midi,duration});
+        else if(midi>=0&&midi<=127)events.push({type:'note',midi,duration});
       }else if(item&&typeof item==='object'){
         const duration=Math.max(1,Math.floor(Number(item.duration)||1));
         if(item.type==='rest')events.push({type:'rest',midi:0,duration});
         else if(item.type==='note'){
           const midi=Math.floor(Number(item.midi));
-          if(midi>=12&&midi<=120)events.push({type:'note',midi,duration});
+          if(midi>=0&&midi<=127)events.push({type:'note',midi,duration});
         }
       }
     }
@@ -962,10 +988,6 @@ function renderKeyboard(){
   if(pi)pi.style.width=pianoWidth+'px';
 }
 
-// 座標→鍵盤
-// 新構造: keyboard-viewportは親(piano-h-scroll)のスクロールで一緒に移動するので、
-// clientX - viewportRect.left がそのまま「コンテンツ内X座標」になる。
-// （旧実装のようにscrollLeftを加算してはいけない）
 function keyAtPoint(clientX,clientY){
   const kb=document.getElementById('piano-keyboard-viewport');
   const rect=kb.getBoundingClientRect();
@@ -1021,7 +1043,9 @@ function renderPianoRoll(){
     label.textContent=String(Math.floor(t/4)+1);
     content.appendChild(label);
   }
-  if(hintLevel>=2&&currentSong){
+  // 音符表示: リズムヒントON または 参考メロディ再生中
+  const showNotes = (hintLevel>=2 || referenceLoopActive) && currentSong;
+  if(showNotes){
     let cursor=0,noteIdx=0;
     for(const ev of currentSong.events){
       if(ev.type==='note'){
@@ -1144,16 +1168,16 @@ function clearHintGlow(){
   document.querySelectorAll('.is-hint-key').forEach(el=>el.classList.remove('is-hint-key'));
   soundHintTargetMidi=null;
 }
+// ヒントの光: 現在の音符（currentNoteIndex）をループ表示
 function showSoundHintTarget(){
   clearHintGlow();
   if(!currentSong)return;
-  if(hintLevel===0)return;
+  if(hintLevel===0)return; // ヒントOFF時は何もしない
   const notes=currentSong.events.filter(e=>e.type==='note');
   if(!notes.length){soundHintTargetMidi=null;return;}
-  if(currentNoteIndex>=notes.length){
-    soundHintTargetMidi=null;
-    return;
-  }
+  // ループ: インデックスが末尾を超えたら0に戻す
+  if(currentNoteIndex>=notes.length) currentNoteIndex=0;
+  if(currentNoteIndex<0) currentNoteIndex=0;
   const note=notes[currentNoteIndex];
   const playMidi=note.midi+currentSongTranspose*12;
   soundHintTargetMidi=playMidi;
@@ -1203,17 +1227,30 @@ function stopSustained(){
   if(currentSustainedVoice){try{currentSustainedVoice.stop();}catch(_){}currentSustainedVoice=null;}
   if(currentSustainedMidi!=null){setKeyPressed(currentSustainedMidi,false);currentSustainedMidi=null;}
 }
+// ヒントON時: 正しい鍵盤を押すと次の音符へ進む。末尾まで行ったらループ
 function onNotePlayed(midi){
   if(hintLevel===0||!currentSong)return;
   const notes=currentSong.events.filter(e=>e.type==='note');
-  if(currentNoteIndex>=notes.length)return;
+  if(!notes.length)return;
+  if(currentNoteIndex>=notes.length) currentNoteIndex=0;
   const expected=notes[currentNoteIndex].midi+currentSongTranspose*12;
   if(midi!==expected)return;
+  // 今の音符を is-played に
   if(hintLevel>=2){
     const block=document.querySelector(`.note-block[data-note-idx="${currentNoteIndex}"]`);
     if(block){block.classList.remove('is-current');block.classList.add('is-played');}
   }
   currentNoteIndex++;
+  // ループ: 末尾に達したら先頭に戻し、全ノートの is-played をリセット
+  if(currentNoteIndex>=notes.length){
+    currentNoteIndex=0;
+    if(hintLevel>=2){
+      document.querySelectorAll('.note-block').forEach(b=>{
+        b.classList.remove('is-played');
+        b.classList.remove('is-current');
+      });
+    }
+  }
   if(hintLevel>=2){
     const nextBlock=document.querySelector(`.note-block[data-note-idx="${currentNoteIndex}"]`);
     if(nextBlock)nextBlock.classList.add('is-current');
@@ -1261,6 +1298,79 @@ function bindKeyboardEvents(){
   kb.addEventListener('pointerleave',handlePointerUp);
 }
 
+// ============ 参考メロディ（正解後のループ再生） ============
+function stopReferenceMelody(){
+  referenceLoopActive=false;
+  if(referenceRaf){cancelAnimationFrame(referenceRaf);referenceRaf=0;}
+  clearHintGlow();
+  hideHitLine();
+}
+function playReferenceMelody(){
+  if(!currentSong)return;
+  warmupAudio();
+  if(!audioCtx)return;
+  // 既存を完全停止
+  stopReferenceMelody();
+  referenceLoopActive=true;
+  startReferenceLoop();
+}
+function startReferenceLoop(){
+  if(!currentSong||!referenceLoopActive)return;
+  const notes=currentSong.events;
+  const unit=currentSong.unitSeconds;
+  const start=audioCtx.currentTime+.05;
+  let cursor=0;
+  notes.forEach(ev=>{
+    if(ev.type==='note'){
+      const midi=ev.midi+currentSongTranspose*12;
+      pianoVoice(midi,start+cursor*unit,ev.duration*unit*.92,.78);
+    }
+    cursor+=ev.duration;
+  });
+  const totalDur=cursor*unit;
+  const totalUnits=cursor;
+  const startTime=performance.now();
+
+  // 参考表示を有効化（音符表示をONに）
+  renderPianoRoll();
+  showHitLine();
+  requestAnimationFrame(()=>scrollUnitToKeyboard(0,false));
+
+  const tick=()=>{
+    if(!referenceLoopActive)return;
+    const elapsed=(performance.now()-startTime)/1000;
+    if(elapsed>=totalDur+.3){
+      // ループ: 再度先頭から
+      referenceRaf=0;
+      startReferenceLoop();
+      return;
+    }
+    const unitNow=elapsed/unit;
+    scrollUnitToKeyboard(Math.min(unitNow,totalUnits),false);
+
+    // 現在の音符を判定
+    let c=0;
+    let currentMidi=null;
+    for(const ev of notes){
+      if(unitNow>=c&&unitNow<c+ev.duration){
+        if(ev.type==='note'){
+          currentMidi=ev.midi+currentSongTranspose*12;
+        }
+        break;
+      }
+      c+=ev.duration;
+    }
+    // 蓄積しないよう毎フレーム全クリア → 現在音のみ点灯
+    document.querySelectorAll('.is-hint-key').forEach(el=>el.classList.remove('is-hint-key'));
+    if(currentMidi!=null){
+      const el=document.querySelector(`.piano-key[data-midi="${currentMidi}"]`);
+      if(el)el.classList.add('is-hint-key');
+    }
+    referenceRaf=requestAnimationFrame(tick);
+  };
+  referenceRaf=requestAnimationFrame(tick);
+}
+
 // ============ ゲーム進行 ============
 function getActivePlayers(){return players.filter(p=>p.active);}
 function getCurrentPianist(){const ap=getActivePlayers();if(!ap.length)return null;return ap[currentPianistIndex%ap.length];}
@@ -1303,6 +1413,7 @@ async function startGame(){
 }
 function stopGame(){
   isGaming=false;isPaused=false;clearInterval(timerInterval);
+  stopReferenceMelody();
   document.getElementById('center-start-overlay').classList.remove('hidden-start');
   document.getElementById('footer-active-controls-left').classList.add('opacity-0','pointer-events-none');
   document.getElementById('footer-active-controls-right').classList.add('opacity-0','pointer-events-none');
@@ -1329,6 +1440,8 @@ function updateTimerDisplay(override){
 }
 function nextSong(){
   if(!songs.length)return;
+  // 参考メロディ再生を停止
+  stopReferenceMelody();
   if(usedSongIndices.size>=songs.length)usedSongIndices.clear();
   let idx;let attempts=0;
   do{idx=Math.floor(Math.random()*songs.length);attempts++;}while(usedSongIndices.has(idx)&&attempts<100);
@@ -1336,6 +1449,7 @@ function nextSong(){
   currentSong=songs[idx];
   prepareSong(currentSong);
   currentSongStartTime=timerSeconds;
+  // お題が変わったのでヒントと鍵盤の光を完全リセット
   hintLevel=0;
   currentNoteIndex=0;
   clearHintGlow();
@@ -1419,6 +1533,8 @@ function openAnswerModal(){
   unlockAudioAndSpeech();
   isPaused=true;
   playSound('correct');
+  // ヒントの光は一旦クリア（参考メロディ再生が光を担当）
+  clearHintGlow();
   playReferenceMelody();
   speakText(`正解は${currentSong.name}でした！`);
   const display=document.getElementById('modal-word-display');
@@ -1431,59 +1547,15 @@ function openAnswerModal(){
   document.getElementById('answer-modal').classList.remove('modal-hidden');
 }
 function closeAnswerModalWithSE(){playButtonSE();closeAnswerModal();}
-function closeAnswerModal(){document.getElementById('answer-modal').classList.add('modal-hidden');isPaused=false;}
-function replayMelodyWithSE(){playButtonSE();playReferenceMelody();}
-let melodyRaf=0;
-function playReferenceMelody(){
-  if(!currentSong)return;
-  warmupAudio();if(!audioCtx)return;
-  cancelAnimationFrame(melodyRaf);
-  const notes=currentSong.events;
-  const unit=currentSong.unitSeconds;
-  const start=audioCtx.currentTime+.05;
-  let cursor=0;
-  notes.forEach(ev=>{
-    if(ev.type==='note'){
-      const midi=ev.midi+currentSongTranspose*12;
-      pianoVoice(midi,start+cursor*unit,ev.duration*unit*.92,.78);
-    }
-    cursor+=ev.duration;
-  });
-  const totalDur=cursor*unit;
-  const startTime=performance.now();
-  if(hintLevel<2){
-    hintLevel=2;
-    currentNoteIndex=0;
-    clearHintGlow();
-    showSoundHintTarget();
-    updateHintButtonUI();
-    updatePianistPtsDisplay();
-  }
-  renderPianoRoll();
-  showHitLine();
-  currentNoteIndex=0;
-  requestAnimationFrame(()=>scrollUnitToKeyboard(0,false));
-  const tick=()=>{
-    const elapsed=(performance.now()-startTime)/1000;
-    if(elapsed>=totalDur+.3){hideHitLine();return;}
-    const unitNow=elapsed/unit;
-    scrollUnitToKeyboard(Math.min(unitNow,cursor),false);
-    let c=0;
-    for(const ev of notes){
-      if(unitNow>=c&&unitNow<c+ev.duration){
-        if(ev.type==='note'){
-          const midi=ev.midi+currentSongTranspose*12;
-          const el=document.querySelector(`.piano-key[data-midi="${midi}"]`);
-          if(el&&!el.classList.contains('is-hint-key'))el.classList.add('is-hint-key');
-        }
-        break;
-      }
-      c+=ev.duration;
-    }
-    melodyRaf=requestAnimationFrame(tick);
-  };
-  melodyRaf=requestAnimationFrame(tick);
+function closeAnswerModal(){
+  document.getElementById('answer-modal').classList.add('modal-hidden');
+  stopReferenceMelody();
+  isPaused=false;
+  // ヒントがONだった場合は光を再開
+  if(hintLevel>0) showSoundHintTarget();
 }
+function replayMelodyWithSE(){playButtonSE();playReferenceMelody();}
+
 function renderAnswerModalGrid(){
   const grid=document.getElementById('answer-modal-grid');grid.innerHTML='';
   const ap=getActivePlayers();
@@ -1783,7 +1855,7 @@ async function resetScores(){
 function backupDataWithSE(){playButtonSE();exportData();}
 function restoreDataWithSE(){playButtonSE();document.getElementById('restore-file-input').click();}
 function exportData(){
-  const data={version:6,players,songs,settings:{enableSpeech,pianistPointEnabled,passedSongCounts,volume:currentVolume},safeMargin};
+  const data={version:7,players,songs,settings:{enableSpeech,pianistPointEnabled,passedSongCounts,volume:currentVolume},safeMargin};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=`atete_pianist_backup_${Date.now()}.json`;a.click();
@@ -1832,6 +1904,7 @@ window.addEventListener('DOMContentLoaded',()=>{
   updateHintButtonUI();
   updatePianistPtsDisplay();
   bindKeyboardEvents();
+  // 初回起動時（旧キーからの移行含む）に安定キーへ書き戻す
   saveStorageData();
   window.addEventListener('resize',()=>{
     applyLayout();
