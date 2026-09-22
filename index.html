@@ -16,9 +16,13 @@ html,body{width:100%;height:100%;overflow:hidden;background:#020617;font-family:
 body{position:relative;display:block;height:100vh;height:100dvh;}
 .logo-text{font-weight:900;background:linear-gradient(270deg,#ff6b6b,#feca57,#48dbfb,#9b59b6,#ff6b6b);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 4px 8px rgba(0,0,0,.6));letter-spacing:.02em;animation:logoShine 6s linear infinite;}
 @keyframes logoShine{0%{background-position:0% 50%}100%{background-position:200% 50%}}
-#app-header{position:absolute;top:0;left:0;right:0;z-index:30;background:#020617;display:flex;align-items:center;justify-content:space-between;padding:0 10px;padding-top:env(safe-area-inset-top);overflow:hidden;gap:6px;}
-#app-header .hdr-left{display:flex;align-items:center;gap:6px;min-width:0;}
-#app-header .hdr-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+#app-header{position:absolute;top:0;left:0;right:0;z-index:30;background:#020617;display:flex;align-items:center;justify-content:space-between;padding:0 8px;padding-top:env(safe-area-inset-top);overflow:hidden;gap:4px;}
+#app-header .hdr-left{display:flex;align-items:center;gap:4px;min-width:0;}
+#app-header .hdr-right{display:flex;align-items:center;gap:4px;flex-shrink:0;}
+#pianist-pts-display{font-family:monospace;font-weight:900;font-size:12px;padding:5px 8px;border-radius:8px;background:linear-gradient(180deg,#065f46,#064e3b);border:1px solid #10b981;color:#d1fae5;white-space:nowrap;text-shadow:0 1px 2px rgba(0,0,0,.5);}
+#pianist-pts-display.off{background:#1e293b;border-color:#475569;color:#94a3b8;}
+#pianist-pts-display.hint1{background:linear-gradient(180deg,#92400e,#78350f);border-color:#f59e0b;color:#fef3c7;}
+#pianist-pts-display.hint2{background:linear-gradient(180deg,#9f1239,#881337);border-color:#f43f5e;color:#ffe4e6;}
 #app-main{position:absolute;z-index:20;background:#020617;border-radius:12px;overflow:hidden;border:2px solid #1e293b;display:flex;flex-direction:row;gap:6px;padding:6px;}
 #app-footer{position:absolute;left:0;right:0;bottom:0;z-index:30;background:#0f172a;display:flex;align-items:center;justify-content:space-between;padding:0 10px;padding-bottom:max(env(safe-area-inset-bottom),0px);gap:6px;overflow:hidden;}
 .artist-highlight{box-shadow:inset 0 0 0 4px #fbbf24;border-color:#fbbf24 !important;}
@@ -27,19 +31,20 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
 #timer-bar{height:12px;background:#1e293b;border-radius:999px;overflow:hidden;position:relative;flex-shrink:0;border:1px solid #334155;}
 #timer-progress-bar{height:100%;background:linear-gradient(to right,#dc2626,#f43f5e,#f59e0b);border-radius:999px;transition:width .2s linear;width:100%;}
 #timer-text-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;color:#fff;font-family:monospace;text-shadow:0 1px 2px rgba(0,0,0,.8);}
-#piano-play-area{flex:1;min-height:0;display:flex;flex-direction:column;gap:4px;}
-#piano-roll-viewport{flex:1;min-height:0;overflow:auto;background:#0d141e;border-radius:6px;border:1px solid #1e293b;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#334155 transparent;position:relative;}
-#piano-roll-viewport::-webkit-scrollbar{width:4px;height:4px;}
-#piano-roll-viewport::-webkit-scrollbar-thumb{background:#334155;border-radius:4px;}
+#piano-play-area{flex:1;min-height:0;display:flex;flex-direction:column;gap:0;position:relative;}
+#piano-roll-viewport{flex:1;min-height:0;overflow-x:hidden;overflow-y:auto;background:#0d141e;border-radius:6px 6px 0 0;border:1px solid #1e293b;border-bottom:0;-webkit-overflow-scrolling:touch;scrollbar-width:thin;scrollbar-color:#334155 transparent;position:relative;}
+#piano-roll-viewport::-webkit-scrollbar{width:3px;height:0;}
+#piano-roll-viewport::-webkit-scrollbar-thumb{background:#334155;border-radius:3px;}
 #piano-roll-content{position:relative;min-height:100%;}
 .pitch-lane{position:absolute;top:0;bottom:0;border-right:1px solid rgba(183,205,235,.08);background:rgba(255,255,255,.01);}
 .pitch-lane.is-black{background:rgba(0,0,0,.28);}
 .pitch-lane.is-c{background:rgba(251,191,36,.05);border-right:1px solid rgba(251,191,36,.15);}
 .time-label{position:absolute;left:2px;height:13px;padding:0 4px;color:#64748b;background:rgba(9,13,20,.8);border-radius:4px;font-size:8px;line-height:13px;pointer-events:none;z-index:1;}
-.note-block{position:absolute;border:1px solid rgba(251,191,36,.8);border-radius:4px;background:linear-gradient(180deg,#fcd34d,#f59e0b);box-shadow:inset 0 1px rgba(255,255,255,.4),0 2px 6px rgba(0,0,0,.3);z-index:4;transition:transform .5s ease-in,opacity .5s ease-in;}
-.note-block.is-played{transform:translateY(50px);opacity:0;}
-.playhead-line{position:absolute;left:0;width:100%;height:2px;background:#f43f5e;box-shadow:0 0 10px #f43f5e,0 0 3px #fff;pointer-events:none;z-index:10;display:none;}
-#piano-keyboard-viewport{flex-shrink:0;height:90px;overflow-x:auto;overflow-y:hidden;background:#080b10;border-radius:6px;border:1px solid #1e293b;touch-action:none;position:relative;scrollbar-width:none;}
+.note-block{position:absolute;border:1px solid rgba(251,191,36,.8);border-radius:4px;background:linear-gradient(180deg,#fcd34d,#f59e0b);box-shadow:inset 0 1px rgba(255,255,255,.4),0 2px 6px rgba(0,0,0,.3);z-index:4;transition:opacity .35s ease-out,filter .35s ease-out;}
+.note-block.is-played{opacity:.15;filter:grayscale(.7);}
+.note-block.is-current{background:linear-gradient(180deg,#a7f3d0,#10b981);border-color:#6ee7b7;box-shadow:0 0 12px rgba(16,185,129,.7);}
+.hit-line{position:absolute;left:0;width:100%;height:2px;background:#f43f5e;box-shadow:0 0 10px #f43f5e,0 0 3px #fff;pointer-events:none;z-index:9;display:none;}
+#piano-keyboard-viewport{flex-shrink:0;height:90px;overflow-x:auto;overflow-y:hidden;background:#080b10;border-radius:0 0 6px 6px;border:1px solid #1e293b;border-top:2px solid #f43f5e;touch-action:none;position:relative;scrollbar-width:none;}
 #piano-keyboard-viewport::-webkit-scrollbar{display:none;}
 #piano-keyboard-content{position:relative;height:100%;}
 .piano-key{position:absolute;top:0;padding:0;border:0;border-radius:0 0 4px 4px;overflow:hidden;}
@@ -48,7 +53,6 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
 .black-key{z-index:3;border:1px solid #020305;border-bottom:5px solid #020305;background:linear-gradient(90deg,#06080b,#303640 45%,#0b0e13 78%,#020304);box-shadow:inset 0 -4px 3px rgba(255,255,255,.06),0 4px 5px rgba(0,0,0,.5);}
 .white-key.is-pressed{background:linear-gradient(90deg,#8ddff2,#e4fbff 30%,#9ce8f7);border-bottom-width:2px;transform:translateY(2px);}
 .black-key.is-pressed{background:linear-gradient(90deg,#063b4c,#32b9db 50%,#062c38);border-bottom-width:3px;transform:translateY(2px);box-shadow:0 0 14px rgba(83,215,255,.5);}
-/* z-index fix: white key glow must stay behind black keys; black key glow stays on top */
 .white-key.is-hint-key{z-index:1 !important;box-shadow:inset 0 0 0 3px #fbbf24,inset 0 -6px 8px rgba(60,67,77,.12),inset 0 1px #fff;animation:keyHintWhite .6s ease-in-out infinite alternate;}
 .black-key.is-hint-key{z-index:10 !important;box-shadow:0 0 0 3px #fbbf24,0 0 18px rgba(251,191,36,.95),inset 0 -4px 3px rgba(255,255,255,.06);animation:keyHintBlack .6s ease-in-out infinite alternate;}
 @keyframes keyHintWhite{from{background:linear-gradient(90deg,#fde68a,#fffbeb 40%,#fcd34d)}to{background:linear-gradient(90deg,#fbbf24,#fff8dc 40%,#f59e0b)}}
@@ -79,8 +83,9 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
 @keyframes bonusPop{0%{opacity:0;transform:scale(.4)}15%{opacity:1;transform:scale(1.1)}25%{transform:scale(1)}80%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(.9)}}
 #custom-dialog{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:16px;}
 #custom-dialog .dialog-box{background:#0f172a;border:1px solid #334155;border-radius:20px;padding:24px;width:100%;max-width:420px;box-shadow:0 20px 40px rgba(0,0,0,.6);text-align:center;display:flex;flex-direction:column;gap:16px;}
-.hint-btn{background:linear-gradient(180deg,#334155,#1e293b);border:1px solid #475569;color:#e2e8f0;padding:7px 10px;border-radius:10px;font-size:11px;font-weight:800;white-space:nowrap;transition:all .15s;}
-.hint-btn.active{background:linear-gradient(180deg,#fbbf24,#f59e0b);border-color:#fcd34d;color:#000;box-shadow:0 0 0 3px rgba(251,191,36,.3),0 0 16px rgba(251,191,36,.5);}
+.hint-btn{background:linear-gradient(180deg,#334155,#1e293b);border:1px solid #475569;color:#e2e8f0;padding:6px 10px;border-radius:10px;font-size:11px;font-weight:800;white-space:nowrap;transition:all .15s;}
+.hint-btn.level1{background:linear-gradient(180deg,#fbbf24,#f59e0b);border-color:#fcd34d;color:#000;box-shadow:0 0 0 3px rgba(251,191,36,.3),0 0 16px rgba(251,191,36,.5);}
+.hint-btn.level2{background:linear-gradient(180deg,#f43f5e,#be123c);border-color:#fda4af;color:#fff;box-shadow:0 0 0 3px rgba(244,63,94,.35),0 0 16px rgba(244,63,94,.5);}
 .hint-btn:active{transform:scale(.95);}
 .gallery-card{background:linear-gradient(180deg,#0f172a,#020617);border:1px solid rgba(251,191,36,.3);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:6px;}
 .volume-slider{width:100%;accent-color:#fbbf24;}
@@ -95,9 +100,9 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
     <span class="logo-text text-base md:text-xl">アテテ！Pianist</span>
     <button id="header-main-btn" onclick="headerMainBtnWithSE()" class="bg-slate-800/90 hover:bg-slate-700 text-slate-200 border border-slate-600 px-2.5 py-1.5 rounded-lg text-[11px] md:text-xs font-bold shadow-lg active:scale-95 transition whitespace-nowrap">⚙️ 設定</button>
   </div>
+  <div id="pianist-pts-display">獲得予定: --P</div>
   <div class="hdr-right">
-    <button id="sound-hint-btn" onclick="toggleSoundHintWithSE()" class="hint-btn">🎵 音ヒント(-1P)</button>
-    <button id="rhythm-hint-btn" onclick="toggleRhythmHintWithSE()" class="hint-btn">🎼 リズム(-2P)</button>
+    <button id="hint-btn" onclick="cycleHintWithSE()" class="hint-btn">🎵 ヒント</button>
   </div>
 </header>
 
@@ -269,14 +274,13 @@ body{position:relative;display:block;height:100vh;height:100dvh;}
 
 <script>
 // ============ 定数 ============
-const STORAGE_KEY_PLAYERS='atete_pianist_players_v2';
-const STORAGE_KEY_SETTINGS='atete_pianist_settings_v2';
-const STORAGE_KEY_SONGS='atete_pianist_songs_v2';
-const STORAGE_KEY_SAFE_MARGIN='atete_pianist_safe_margin_v2';
-const STORAGE_KEY_PASSED='atete_pianist_passed_v2';
+const STORAGE_KEY_PLAYERS='atete_pianist_players_v3';
+const STORAGE_KEY_SETTINGS='atete_pianist_settings_v3';
+const STORAGE_KEY_SONGS='atete_pianist_songs_v3';
+const STORAGE_KEY_SAFE_MARGIN='atete_pianist_safe_margin_v3';
+const STORAGE_KEY_PASSED='atete_pianist_passed_v3';
 
 const EMOJI_OPTIONS=["🐶","🐱","🐭","🐹","🐰","🦊","🐻","🐼","🐨","🐯","🦁","🐮","🐦","🐣","🐙","🦑","🐸","🦖"];
-
 const COLOR_OPTIONS=[
   {id:"red",name:"レッド",bg:"bg-red-600",border:"border-red-400"},
   {id:"orange",name:"オレンジ",bg:"bg-orange-600",border:"border-orange-400"},
@@ -291,7 +295,6 @@ const COLOR_OPTIONS=[
   {id:"purple",name:"パープル",bg:"bg-purple-600",border:"border-purple-400"},
   {id:"pink",name:"パステルピンク",bg:"bg-pink-400",border:"border-pink-200"}
 ];
-
 const DEFAULT_PLAYERS=[
   {id:0,name:"プレイヤー1",emoji:"🐶",colorIdx:0,active:true,score:0},
   {id:1,name:"プレイヤー2",emoji:"🐱",colorIdx:1,active:true,score:0},
@@ -303,15 +306,12 @@ const DEFAULT_PLAYERS=[
   {id:7,name:"プレイヤー8",emoji:"🦁",colorIdx:7,active:false,score:0},
   {id:8,name:"プレイヤー9",emoji:"🐣",colorIdx:8,active:false,score:0}
 ];
-
-// ツクッテ！Pianist と同じ 48半音 (C3=48 〜 B6=95)
 const FIRST_MIDI=48;
 const LAST_MIDI=95;
 const PITCH_COUNT=48;
 const BLACK_PCS=new Set([1,3,6,8,10]);
 const ROW_H=22;
 const TOP_PAD_UNITS=4;
-
 const PIANO_PARTIALS=[
   {ratio:1,type:'triangle',gain:.82,detune:-1.7},
   {ratio:2,type:'sine',gain:.24,detune:1.1},
@@ -341,12 +341,10 @@ let roundScores={};
 let roundRecordings=[];
 let passedSongCounts={};
 
-// ヒント状態
+// ヒント: 0=OFF, 1=音ヒント, 2=音+リズムヒント
 let hintLevel=0;
-let soundHintActive=false;
 let soundHintNoteIndex=0;
 let soundHintTargetMidi=null;
-let rhythmHintActive=false;
 let rhythmHintProgress=0;
 
 // オーディオ
@@ -356,6 +354,7 @@ let recorderDest=null;
 let recordingChunks=[];
 let currentRoundRecordingUrl=null;
 let currentRoundMR=null;
+let audioWarmedUp=false;
 
 let currentSustainedVoice=null;
 let currentSustainedMidi=null;
@@ -367,6 +366,8 @@ let whiteKeyWidth=32;
 
 const DEFAULT_SAFE_MARGIN=18;
 let safeMargin=DEFAULT_SAFE_MARGIN;
+
+let suppressScrollSync=false;
 
 // ============ ダイアログ ============
 let customDialogResolve=null;
@@ -433,11 +434,13 @@ function commitSafeMargin(v){
   saveStorageData();
 }
 
-// ============ オーディオ ============
+// ============ オーディオ（低遅延） ============
 function ensureAudio(){
   if(!audioCtx){
     try{
-      audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+      const AC=window.AudioContext||window.webkitAudioContext;
+      const opts={latencyHint:'interactive'};
+      try{audioCtx=new AC(opts);}catch(_){audioCtx=new AC();}
       masterGain=audioCtx.createGain();
       masterGain.gain.value=currentVolume;
       masterGain.connect(audioCtx.destination);
@@ -449,6 +452,19 @@ function ensureAudio(){
   if(audioCtx.state==='suspended'||audioCtx.state==='interrupted')audioCtx.resume().catch(()=>{});
   return audioCtx;
 }
+function warmupAudio(){
+  const ctx=ensureAudio();
+  if(!ctx||audioWarmedUp)return;
+  audioWarmedUp=true;
+  try{
+    const buf=ctx.createBuffer(1,1,ctx.sampleRate||22050);
+    const src=ctx.createBufferSource();
+    src.buffer=buf;
+    src.connect(ctx.destination);
+    src.start(0);
+  }catch(_){}
+  if(ctx.state!=='running')ctx.resume().catch(()=>{});
+}
 function frequency(midi){return 440*Math.pow(2,(midi-69)/12);}
 function createVoiceBase(midi,when,velocity){
   const f=frequency(midi);
@@ -459,7 +475,7 @@ function createVoiceBase(midi,when,velocity){
   const env=audioCtx.createGain();
   const amp=Math.max(.05,Math.min(.32,velocity*.28));
   env.gain.setValueAtTime(.0001,when);
-  env.gain.linearRampToValueAtTime(amp,when+.009);
+  env.gain.linearRampToValueAtTime(amp,when+.003);
   env.gain.exponentialRampToValueAtTime(Math.max(.0002,amp*.42),when+.16);
   filter.connect(env);env.connect(masterGain);
   return {f,filter,envelope:env,amp};
@@ -501,7 +517,8 @@ function startSustainedVoice(midi,velocity=.78){
     const osc=audioCtx.createOscillator();const g=audioCtx.createGain();
     osc.type=part.type;osc.frequency.setValueAtTime(base.f*part.ratio,now);osc.detune.setValueAtTime(part.detune,now);
     g.gain.setValueAtTime(part.gain,now);
-    osc.connect(g);g.connect(base.filter);osc.start(now);osc.push?oscillators.push(osc):oscillators.push(osc);
+    osc.connect(g);g.connect(base.filter);osc.start(now);
+    oscillators.push(osc);
   });
   addClick(now,velocity);
   let stopped=false;
@@ -546,7 +563,7 @@ function playSound(type){
   }catch(_){}
 }
 function unlockAudioAndSpeech(){
-  ensureAudio();
+  warmupAudio();
   if('speechSynthesis' in window&&window.speechSynthesis.paused)window.speechSynthesis.resume();
 }
 function speakText(text){
@@ -647,7 +664,7 @@ function saveStorageData(){
   }catch(e){console.error(e);}
 }
 function toggleSpeech(c){enableSpeech=c;saveStorageData();}
-function togglePianistPoint(c){pianistPointEnabled=c;saveStorageData();}
+function togglePianistPoint(c){pianistPointEnabled=c;saveStorageData();updatePianistPtsDisplay();}
 function previewVolume(v){const e=document.getElementById('volume-value');if(e)e.innerText=v+'%';}
 function commitVolume(v){
   currentVolume=Math.max(0,Math.min(2,Number(v)/100));
@@ -686,9 +703,9 @@ let previewItemEl=null;
 function previewSongPlayback(song,item){
   clearTimeout(previewTimer);
   if(previewItemEl)previewItemEl.classList.remove('is-playing');
-  ensureAudio();
+  warmupAudio();
   if(!audioCtx)return;
-  const start=audioCtx.currentTime+.1;
+  const start=audioCtx.currentTime+.05;
   let cursor=0;
   song.events.forEach(ev=>{
     if(ev.type==='note')pianoVoice(ev.midi,start+cursor*song.unitSeconds,ev.duration*song.unitSeconds*.92,.78);
@@ -852,9 +869,6 @@ function keyAtPoint(clientX,clientY){
 }
 
 // ============ ピアノロール ============
-// 座標系: 最初の音符が「一番下」、時間は上方向に進む。
-// contentHeight = (totalUnits + TOP_PAD_UNITS) * ROW_H
-// y(t) = contentHeight - t * ROW_H
 function pianoRollTimeToY(t,totalUnits){
   const contentHeight=(totalUnits+TOP_PAD_UNITS)*ROW_H;
   return contentHeight-t*ROW_H;
@@ -863,13 +877,13 @@ function renderPianoRoll(){
   const content=document.getElementById('piano-roll-content');
   const vp=document.getElementById('piano-roll-viewport');
   if(!content||!vp)return;
+  const prevScrollTop=vp.scrollTop;
   const totalUnits=currentSong?currentSong.events.reduce((a,e)=>a+e.duration,0):16;
   const contentHeight=(totalUnits+TOP_PAD_UNITS)*ROW_H;
   content.style.height=contentHeight+'px';
   content.style.width=pianoWidth+'px';
   content.innerHTML='';
 
-  // ピッチレーン
   const ordered=Array.from(keyGeometry.keys()).sort((a,b)=>{
     const ga=keyGeometry.get(a),gb=keyGeometry.get(b);
     return Number(ga.isBlack)-Number(gb.isBlack)||ga.left-gb.left;
@@ -882,7 +896,6 @@ function renderPianoRoll(){
     content.appendChild(lane);
   }
 
-  // タイムラベル
   for(let t=0;t<=totalUnits;t+=4){
     const y=pianoRollTimeToY(t,totalUnits);
     const label=document.createElement('div');
@@ -892,8 +905,8 @@ function renderPianoRoll(){
     content.appendChild(label);
   }
 
-  // 音符（リズムヒントONのときだけ）
-  if(rhythmHintActive&&currentSong){
+  // 音符（リズムヒント ON のときだけ表示）
+  if(hintLevel>=2&&currentSong){
     let cursor=0,noteIdx=0;
     for(const ev of currentSong.events){
       if(ev.type==='note'){
@@ -908,8 +921,9 @@ function renderPianoRoll(){
             block.dataset.noteIdx=String(noteIdx);
             block.style.left=g.left+'px';block.style.width=g.width+'px';
             block.style.top=yTop+'px';
-            block.style.height=(yBottom-yTop)+'px';
+            block.style.height=Math.max(6,yBottom-yTop-2)+'px';
             if(noteIdx<rhythmHintProgress)block.classList.add('is-played');
+            if(noteIdx===rhythmHintProgress)block.classList.add('is-current');
             content.appendChild(block);
           }
         }
@@ -919,34 +933,44 @@ function renderPianoRoll(){
     }
   }
 
-  const ph=document.createElement('div');
-  ph.id='piano-roll-playhead';
-  ph.className='playhead-line';
-  content.appendChild(ph);
+  const hit=document.createElement('div');
+  hit.id='piano-roll-hitline';
+  hit.className='hit-line';
+  content.appendChild(hit);
 
-  // 初期スクロール: 一番下（時間0）を表示
-  if(!renderPianoRoll._initialized&&currentSong){
-    renderPianoRoll._initialized=true;
-    requestAnimationFrame(()=>scrollPianoRollToUnit(0,false));
-  }
+  if(vp.scrollTop!==prevScrollTop)vp.scrollTop=prevScrollTop;
 }
-function setPlayheadUnit(unit){
-  const ph=document.getElementById('piano-roll-playhead');if(!ph)return;
-  const totalUnits=currentSong?currentSong.events.reduce((a,e)=>a+e.duration,0):16;
-  const y=pianoRollTimeToY(unit,totalUnits);
-  ph.style.top=y+'px';
-  ph.style.display='block';
-}
-function hidePlayhead(){const ph=document.getElementById('piano-roll-playhead');if(ph)ph.style.display='none';}
-function scrollPianoRollToUnit(unit,smooth=true){
+function showHitLine(){
+  const h=document.getElementById('piano-roll-hitline');if(!h)return;
   const vp=document.getElementById('piano-roll-viewport');
-  const content=document.getElementById('piano-roll-content');
-  if(!vp||!content)return;
+  h.style.top=(vp.clientHeight-2)+'px';
+  h.style.display='block';
+}
+function hideHitLine(){const h=document.getElementById('piano-roll-hitline');if(h)h.style.display='none';}
+// 指定ユニット位置（音符の下端＝開始時刻）を、鍵盤と接する高さ（ビューポート最下部）に合わせる
+function scrollUnitToKeyboard(unit,smooth=true){
+  const vp=document.getElementById('piano-roll-viewport');
+  if(!vp)return;
   const totalUnits=currentSong?currentSong.events.reduce((a,e)=>a+e.duration,0):16;
-  const y=pianoRollTimeToY(unit,totalUnits);
-  const target=Math.max(0,Math.min(y-vp.clientHeight*.75,vp.scrollHeight-vp.clientHeight));
-  if(smooth)vp.scrollTo({top:target,behavior:'smooth'});
-  else vp.scrollTop=target;
+  const bottomY=pianoRollTimeToY(unit,totalUnits);
+  const target=bottomY-vp.clientHeight;
+  const maxScroll=Math.max(0,vp.scrollHeight-vp.clientHeight);
+  const clamped=Math.max(0,Math.min(maxScroll,target));
+  if(smooth)vp.scrollTo({top:clamped,behavior:'smooth'});
+  else vp.scrollTop=clamped;
+}
+// 次の予定音符の開始ユニットを求める
+function cursorOfNoteIndex(idx){
+  if(!currentSong)return 0;
+  let cursor=0,noteIdx=0;
+  for(const ev of currentSong.events){
+    if(ev.type==='note'){
+      if(noteIdx===idx)return cursor;
+      noteIdx++;
+    }
+    cursor+=ev.duration;
+  }
+  return cursor;
 }
 
 // ============ 曲の準備 ============
@@ -966,21 +990,34 @@ function prepareSong(song){
 }
 
 // ============ ヒント ============
-function setHintButtonStates(){
-  const sb=document.getElementById('sound-hint-btn');
-  const rb=document.getElementById('rhythm-hint-btn');
-  if(sb)sb.classList.toggle('active',soundHintActive);
-  if(rb)rb.classList.toggle('active',rhythmHintActive);
-  const status=document.getElementById('hint-status');
-  if(!status)return;
-  if(!currentSong||!isGaming){status.textContent='';return;}
-  const notes=currentSong.events.filter(e=>e.type==='note');
+function updatePianistPtsDisplay(){
+  const el=document.getElementById('pianist-pts-display');
+  if(!el)return;
+  el.classList.remove('off','hint1','hint2');
+  if(!isGaming){
+    el.textContent='獲得予定: --P';
+    el.classList.add('off');
+    return;
+  }
+  if(!pianistPointEnabled){
+    el.textContent='ピアニストPt: OFF';
+    el.classList.add('off');
+    return;
+  }
   const pts=3-hintLevel;
-  status.textContent=`獲得予定: ${pts}P  音ヒント:${soundHintActive?'ON':'OFF'} リズム:${rhythmHintActive?'ON':'OFF'}  音符 ${Math.min(soundHintNoteIndex,notes.length)}/${notes.length}`;
+  el.textContent=`獲得予定: ${pts}P`;
+  if(hintLevel===1)el.classList.add('hint1');
+  else if(hintLevel>=2)el.classList.add('hint2');
 }
-function clearHintGlow(){
-  document.querySelectorAll('.is-hint-key').forEach(el=>el.classList.remove('is-hint-key'));
+function updateHintButtonUI(){
+  const b=document.getElementById('hint-btn');
+  if(!b)return;
+  b.classList.remove('level1','level2');
+  if(hintLevel===0)b.textContent='🎵 ヒント OFF';
+  else if(hintLevel===1){b.textContent='🎵 音ヒント ON';b.classList.add('level1');}
+  else{b.textContent='🎼 リズム ON';b.classList.add('level2');}
 }
+function clearHintGlow(){document.querySelectorAll('.is-hint-key').forEach(el=>el.classList.remove('is-hint-key'));}
 function showSoundHintTarget(){
   clearHintGlow();
   if(!currentSong)return;
@@ -993,38 +1030,36 @@ function showSoundHintTarget(){
   const el=document.querySelector(`.piano-key[data-midi="${playMidi}"]`);
   if(el)el.classList.add('is-hint-key');
   ensureAudio();
-  if(audioCtx)pianoVoice(playMidi,audioCtx.currentTime+.02,.35,.72);
+  if(audioCtx)pianoVoice(playMidi,audioCtx.currentTime+.005,.35,.72);
   scrollKeyboardKeyIntoView(playMidi);
 }
-function toggleSoundHintWithSE(){
-  playButtonSE();
-  if(!isGaming||!currentSong){return;}
-  soundHintActive=!soundHintActive;
-  if(soundHintActive){
-    hintLevel=Math.max(hintLevel,1);
-    soundHintNoteIndex=0;
-    showSoundHintTarget();
-    speakText('音ヒント オン');
-  }else{
-    clearHintGlow();
-    soundHintTargetMidi=null;
-    speakText('音ヒント オフ');
-  }
-  setHintButtonStates();
-}
-function toggleRhythmHintWithSE(){
+function cycleHintWithSE(){
   playButtonSE();
   if(!isGaming||!currentSong)return;
-  rhythmHintActive=!rhythmHintActive;
-  if(rhythmHintActive){
-    hintLevel=Math.max(hintLevel,2);
+  hintLevel=(hintLevel+1)%3;
+  if(hintLevel===0){
+    clearHintGlow();soundHintTargetMidi=null;
     rhythmHintProgress=0;
-    speakText('リズムヒント オン');
+    renderPianoRoll();
+    hideHitLine();
+    speakText('ヒント オフ');
+  }else if(hintLevel===1){
+    soundHintNoteIndex=0;
+    showSoundHintTarget();
+    renderPianoRoll();
+    hideHitLine();
+    speakText('音ヒント オン');
   }else{
-    speakText('リズムヒント オフ');
+    if(soundHintTargetMidi==null)showSoundHintTarget();
+    renderPianoRoll();
+    showHitLine();
+    // 現在の予定音符を鍵盤と接する位置へ
+    const cursor=cursorOfNoteIndex(0);
+    requestAnimationFrame(()=>scrollUnitToKeyboard(cursor,false));
+    speakText('リズムヒント オン');
   }
-  renderPianoRoll();
-  setHintButtonStates();
+  updateHintButtonUI();
+  updatePianistPtsDisplay();
 }
 function scrollKeyboardKeyIntoView(midi){
   const vp=document.getElementById('piano-keyboard-viewport');
@@ -1052,31 +1087,27 @@ function stopSustained(){
   if(currentSustainedMidi!=null){setKeyPressed(currentSustainedMidi,false);currentSustainedMidi=null;}
 }
 function onNotePlayed(midi){
-  // 音ヒント：正しい鍵盤がタップされたら次の音へ
-  if(soundHintActive&&soundHintTargetMidi!=null&&midi===soundHintTargetMidi){
+  // 音ヒント: 正しい鍵盤 → 次の音へ
+  if(hintLevel>=1&&soundHintTargetMidi!=null&&midi===soundHintTargetMidi){
     soundHintNoteIndex++;
     showSoundHintTarget();
-    setHintButtonStates();
   }
-  // リズムヒント：正しい鍵盤ならノートを流す
-  if(rhythmHintActive&&currentSong){
+  // リズムヒント: 正しい鍵盤 → ピアノロールを下方向に移動
+  if(hintLevel>=2&&currentSong){
     const notes=currentSong.events.filter(e=>e.type==='note');
     if(rhythmHintProgress<notes.length){
       const expected=notes[rhythmHintProgress].midi+currentSongTranspose*12;
       if(midi===expected){
-        const block=document.querySelector(`.note-block[data-note-idx="${rhythmHintProgress}"]`);
-        if(block)block.classList.add('is-played');
-        const nextIdx=rhythmHintProgress+1;
-        rhythmHintProgress=nextIdx;
-        // 次の位置へスクロール（プレイヘッドを合わせる）
-        let cursor=0,ni=0;
-        for(const ev of currentSong.events){
-          if(ev.type==='note'){
-            if(ni===nextIdx){scrollPianoRollToUnit(cursor,true);break;}
-            ni++;
-          }
-          cursor+=ev.duration;
-        }
+        // 直前のノートを is-played に
+        const prevBlock=document.querySelector(`.note-block[data-note-idx="${rhythmHintProgress}"]`);
+        if(prevBlock){prevBlock.classList.remove('is-current');prevBlock.classList.add('is-played');}
+        rhythmHintProgress++;
+        // 次のノートを is-current に
+        const nextBlock=document.querySelector(`.note-block[data-note-idx="${rhythmHintProgress}"]`);
+        if(nextBlock)nextBlock.classList.add('is-current');
+        // ピアノロールを次の音符が鍵盤と接する位置へスクロール
+        const cursor=cursorOfNoteIndex(rhythmHintProgress);
+        scrollUnitToKeyboard(cursor,true);
       }
     }
   }
@@ -1086,7 +1117,7 @@ function handlePointerDown(e){
   const midi=keyAtPoint(e.clientX,e.clientY);
   if(midi==null)return;
   e.preventDefault();
-  ensureAudio();
+  warmupAudio();
   activePointerId=e.pointerId;
   stopSustained();
   currentSustainedMidi=midi;
@@ -1104,7 +1135,6 @@ function handlePointerMove(e){
     currentSustainedMidi=midi;
     setKeyPressed(midi,true);
     currentSustainedVoice=startSustainedVoice(midi,.78);
-    // スライドでのヒント進行はしない（誤動作防止）
   }
 }
 function handlePointerUp(e){
@@ -1119,6 +1149,21 @@ function bindKeyboardEvents(){
   vp.addEventListener('pointerup',handlePointerUp);
   vp.addEventListener('pointercancel',handlePointerUp);
   vp.addEventListener('pointerleave',handlePointerUp);
+}
+// 鍵盤↔ピアノロールの横スクロール同期
+function bindScrollSync(){
+  const pr=document.getElementById('piano-roll-viewport');
+  const kb=document.getElementById('piano-keyboard-viewport');
+  if(!pr||!kb)return;
+  let syncing=false;
+  kb.addEventListener('scroll',()=>{
+    if(syncing||suppressScrollSync)return;
+    syncing=true;
+    pr.scrollLeft=kb.scrollLeft;
+    requestAnimationFrame(()=>{syncing=false;});
+  },{passive:true});
+  // ピアノロールは水平には overflow:hidden なので scrollLeft を直接セット
+  // キーボード側からドラッグ操作時のみトリガされる
 }
 
 // ============ ゲーム進行 ============
@@ -1145,7 +1190,7 @@ async function startGame(){
   document.getElementById('btn-correct-trigger').disabled=false;
   updateHeaderButton();
   updateTimerDisplay();
-  ensureAudio();
+  warmupAudio();
   nextSong();
   const pianist=getCurrentPianist();
   speakText(`よーい、スタート！${pianist?pianist.name:'ピアニスト'}さん、演奏をお願いします！`);
@@ -1172,12 +1217,11 @@ function stopGame(){
   updateTimerDisplay(60);
   updateCenterArtistDisplay();
   updateHeaderButton();
-  hidePlayhead();
+  hideHitLine();
   clearHintGlow();
-  soundHintActive=false;soundHintTargetMidi=null;soundHintNoteIndex=0;
-  rhythmHintActive=false;rhythmHintProgress=0;
-  hintLevel=0;
-  setHintButtonStates();
+  hintLevel=0;soundHintTargetMidi=null;soundHintNoteIndex=0;rhythmHintProgress=0;
+  updateHintButtonUI();
+  updatePianistPtsDisplay();
   renderPianoRoll();
   stopRoundRecording();
 }
@@ -1197,17 +1241,17 @@ function nextSong(){
   currentSong=songs[idx];
   prepareSong(currentSong);
   currentSongStartTime=timerSeconds;
-  hintLevel=0;
-  soundHintActive=false;soundHintTargetMidi=null;soundHintNoteIndex=0;
-  rhythmHintActive=false;rhythmHintProgress=0;
+  hintLevel=0;soundHintTargetMidi=null;soundHintNoteIndex=0;rhythmHintProgress=0;
   clearHintGlow();
-  setHintButtonStates();
+  updateHintButtonUI();
+  updatePianistPtsDisplay();
   document.getElementById('word-display').innerText=currentSong.name;
   buildKeyGeometry();
   renderKeyboard();
-  renderPianoRoll._initialized=false;
   renderPianoRoll();
-  requestAnimationFrame(()=>scrollPianoRollToUnit(0,false));
+  hideHitLine();
+  // 初期スクロール: 一番下（時間0）
+  requestAnimationFrame(()=>scrollUnitToKeyboard(0,false));
   startRoundRecording();
   const bonus=passedSongCounts[currentSong.name]||0;
   if(bonus>0){
@@ -1295,11 +1339,11 @@ function replayMelodyWithSE(){playButtonSE();playReferenceMelody();}
 let melodyRaf=0;
 function playReferenceMelody(){
   if(!currentSong)return;
-  ensureAudio();if(!audioCtx)return;
+  warmupAudio();if(!audioCtx)return;
   cancelAnimationFrame(melodyRaf);
   const notes=currentSong.events;
   const unit=currentSong.unitSeconds;
-  const start=audioCtx.currentTime+.12;
+  const start=audioCtx.currentTime+.05;
   let cursor=0;
   notes.forEach(ev=>{
     if(ev.type==='note'){
@@ -1310,17 +1354,24 @@ function playReferenceMelody(){
   });
   const totalDur=cursor*unit;
   const startTime=performance.now();
-  // ピアノロールを全音符表示に切り替え
-  if(!rhythmHintActive){rhythmHintActive=true;renderPianoRoll();}
+  // メロディ再生時はリズムヒント相当（全音符表示）
+  if(hintLevel<2){
+    hintLevel=2;
+    updateHintButtonUI();
+    updatePianistPtsDisplay();
+  }
+  renderPianoRoll();
+  showHitLine();
   rhythmHintProgress=0;
-  requestAnimationFrame(()=>scrollPianoRollToUnit(0,false));
+  const totalUnits=cursor;
+  requestAnimationFrame(()=>scrollUnitToKeyboard(0,false));
   const tick=()=>{
     const elapsed=(performance.now()-startTime)/1000;
-    if(elapsed>=totalDur+.3){hidePlayhead();return;}
+    if(elapsed>=totalDur+.3){hideHitLine();return;}
     const unitNow=elapsed/unit;
-    setPlayheadUnit(unitNow);
-    // 現在位置まで流す
-    if(Math.floor(unitNow*2)%2===0)scrollPianoRollToUnit(unitNow,false);
+    // ヒットラインは最下部固定。経過ユニットを鍵盤と接する位置にスクロール
+    const maxU=Math.min(unitNow,totalUnits);
+    scrollUnitToKeyboard(maxU,false);
     // 該当音符をハイライト
     let c=0;
     for(const ev of notes){
@@ -1636,7 +1687,7 @@ async function resetScores(){
 function backupDataWithSE(){playButtonSE();exportData();}
 function restoreDataWithSE(){playButtonSE();document.getElementById('restore-file-input').click();}
 function exportData(){
-  const data={version:2,players,songs,settings:{enableSpeech,pianistPointEnabled,passedSongCounts,volume:currentVolume},safeMargin};
+  const data={version:3,players,songs,settings:{enableSpeech,pianistPointEnabled,passedSongCounts,volume:currentVolume},safeMargin};
   const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download=`atete_pianist_backup_${Date.now()}.json`;a.click();
@@ -1682,16 +1733,25 @@ window.addEventListener('DOMContentLoaded',()=>{
   renderTvRankings();
   updateCenterArtistDisplay();
   updateHeaderButton();
+  updateHintButtonUI();
+  updatePianistPtsDisplay();
   bindKeyboardEvents();
-  setHintButtonStates();
+  bindScrollSync();
   window.addEventListener('resize',()=>{
     applyLayout();
     buildKeyGeometry();
     renderKeyboard();
     renderPianoRoll();
   });
-  const unlockOnce=()=>{ensureAudio();document.removeEventListener('pointerdown',unlockOnce);};
+  const unlockOnce=()=>{warmupAudio();document.removeEventListener('pointerdown',unlockOnce);};
   document.addEventListener('pointerdown',unlockOnce,{once:true,passive:true});
+  // 鍵盤のスクロール位置を初期化（C4付近が表示されるように）
+  requestAnimationFrame(()=>{
+    const kb=document.getElementById('piano-keyboard-viewport');
+    if(!kb)return;
+    const g=keyGeometry.get(60);
+    if(g)kb.scrollLeft=Math.max(0,g.left-kb.clientWidth/2);
+  });
 });
 </script>
 </body>
